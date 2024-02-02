@@ -95,6 +95,28 @@ def test_update_hand():
         
         return # exit function
 
+    # test 4
+    handOrig = {'t': 1, 'r': 1, 'a': 2, 'd': 1, 'e':2, 'h':1}
+    handCopy = handOrig.copy()
+    word = "TRADE"
+
+    hand2 = update_hand(handCopy, word)
+    expected_hand1 = {'a': 1, 'e':1}
+    expected_hand2 = {'t': 0, 'r': 0, 'a': 1, 'd': 0, 'e':1, 'h':1}
+    if hand2 != expected_hand1 and hand2 != expected_hand2:
+        print("FAILURE: test_update_hand('" + word + "', " + str(handOrig) + ")")
+        print("\tReturned: ", hand2, "\n\t-- but expected:", expected_hand1, "or", expected_hand2)
+
+        return  # exit function
+
+    if handCopy != handOrig:
+        print("FAILURE: test_update_hand('" + word + "', " + str(handOrig) + ")")
+        print("\tOriginal hand was", handOrig)
+        print("\tbut implementation of update_hand mutated the original hand!")
+        print("\tNow the hand looks like this:", handCopy)
+
+        return  # exit function
+
     print("SUCCESS: test_update_hand()")
 
 # end of test_update_hand

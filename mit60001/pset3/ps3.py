@@ -3,7 +3,7 @@
 # The 6.0001 Word Game
 # Created by: Kevin Luu <luuk> and Jenna Wiens <jwiens>
 #
-# Name          : <your name>
+# Name          : Jeeth Joseph
 # Collaborators : <your collaborators>
 # Time spent    : <total time>
 
@@ -91,8 +91,17 @@ def get_word_score(word, n):
     n: int >= 0
     returns: int >= 0
     """
-    
-    pass  # TO DO... Remove this line when you implement this function
+    if word == '':
+        return 0
+    else:
+        lower_case_word =  word.lower()
+        first_component = 0
+        for letter in lower_case_word:
+            first_component = first_component + SCRABBLE_LETTER_VALUES[letter]
+        second_component =  max((7*len(lower_case_word)-3*(n-len(lower_case_word))),1)
+        return first_component * second_component
+
+
 
 #
 # Make sure you understand how this function works and what it does!
@@ -135,10 +144,11 @@ def deal_hand(n):
     
     hand={}
     num_vowels = int(math.ceil(n / 3))
-
-    for i in range(num_vowels):
+    hand['*'] = 1
+    for i in range(num_vowels - 1):
         x = random.choice(VOWELS)
         hand[x] = hand.get(x, 0) + 1
+
     
     for i in range(num_vowels, n):    
         x = random.choice(CONSONANTS)
@@ -167,9 +177,12 @@ def update_hand(hand, word):
     hand: dictionary (string -> int)    
     returns: dictionary (string -> int)
     """
-
-    pass  # TO DO... Remove this line when you implement this function
-
+    new_hand = hand.copy()
+    freq_word = get_frequency_dict(word.lower())
+    for letter in freq_word.keys():
+        if letter in new_hand:
+            new_hand[letter] = max((new_hand[letter]-freq_word[letter]),0)
+    return new_hand
 #
 # Problem #3: Test word validity
 #
@@ -184,8 +197,18 @@ def is_valid_word(word, hand, word_list):
     word_list: list of lowercase strings
     returns: boolean
     """
+    case_insensitive_word = word.lower()
+    case_insensitive_freq = get_frequency_dict(case_insensitive_word)
+    if case_insensitive_word in word_list:
+        for letter in case_insensitive_word:
+            if letter not in hand:
+                return False
+            else:
+                if case_insensitive_freq[letter] > hand[letter]:
+                    return False
+        return True
 
-    pass  # TO DO... Remove this line when you implement this function
+
 
 #
 # Problem #5: Playing a hand
