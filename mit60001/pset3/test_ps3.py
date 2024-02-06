@@ -255,7 +255,6 @@ def test_wildcard(word_list):
         print("\tExpected False, but got True for word: '"+ word +"' and hand:", hand)
 
         failure = True    
-
     # dictionary of words and scores WITH wildcards
     words = {("h*ney", 7):290, ("c*ws", 6):176, ("wa*ls", 7):203}
     for (word, n) in words.keys():
