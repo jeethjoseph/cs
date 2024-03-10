@@ -256,7 +256,13 @@ def filter_stories(stories, triggerlist):
     # TODO: Problem 10
     # This is a placeholder
     # (we're just returning all the stories, with no filtering)
-    return stories
+    filtered = []
+    for story in stories:
+        for trigger in triggerlist:
+            if trigger.evaluate(story) == True:
+                filtered.append(story)
+    # print(filtered)
+    return filtered
 
 
 # ======================
@@ -282,8 +288,48 @@ def read_trigger_config(filename):
     # TODO: Problem 11
     # line is the list of lines that you need to parse and for which you need
     # to build triggers
+    trigger_class_dict = {"TITLE":TitleTrigger,
+                    "DESCRIPTION":DescriptionTrigger,
+                    "AFTER":AfterTrigger,
+                    "BEFORE":BeforeTrigger,
+                    "NOT":NotTrigger,
+                    "AND":AndTrigger,
+                    "OR":OrTrigger}
+    all_triggers = {}
+    trigger_list =[]
+    for line in lines:
+        if not line.startswith("ADD"):
+            command_list = line.split(",")
+            trigger_name = command_list[0]
+            trigger_class_name = command_list[1]
+            trigger_class = trigger_class_dict[trigger_class_name]
+            print("trigger",trigger_class_name)
 
-    print(lines)  # for now, print it so you see what it contains!
+            if trigger_class_name in ("AND", "OR"):
+                trigger_parameter1 = command_list[2]
+                trigger_parameter2 = command_list[3]
+                print(trigger_parameter1, trigger_parameter2)
+                try:
+                    all_triggers[trigger_name] = trigger_class(all_triggers[trigger_parameter1],all_triggers[trigger_parameter2])
+                except NotImplementedError:
+                    print("Ingredient not defined")
+
+            else:
+                trigger_parameter1 = command_list[2]
+                all_triggers[trigger_name] = trigger_class(trigger_parameter1)
+        else:
+            command_list = line.split(",")
+            for trigger_name in command_list[1:]:
+                trigger_list.append(all_triggers[trigger_name])
+    print(lines)
+    print(trigger_list)
+    return trigger_list
+
+
+
+
+
+    # print(lines)  # for now, print it so you see what it contains!
 
 
 SLEEPTIME = 120  # seconds -- how often we poll
@@ -293,7 +339,7 @@ def main_thread(master):
     # A sample trigger list - you might need to change the phrases to correspond
     # to what is currently in the news
     try:
-        t1 = TitleTrigger("india")
+        t1 = TitleTrigger("bjp")
         t2 = DescriptionTrigger("nasa")
         t3 = DescriptionTrigger("astroid")
         t4 = AndTrigger(t2, t3)
@@ -301,7 +347,7 @@ def main_thread(master):
 
         # Problem 11
         # TODO: After implementing read_trigger_config, uncomment this line 
-        # triggerlist = read_trigger_config('triggers.txt')
+        triggerlist = read_trigger_config('triggers.txt')
 
         # HELPER CODE - you don't need to understand this!
         # Draws the popup window that displays the filtered stories
